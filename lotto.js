@@ -7,11 +7,17 @@
  *  - 각 로또 번호는 6개다.
  */
 
-const numbersOfLotto = 6;
-let inputMoney = 0;
-const lottos = [];
-const minNumber = 1;
-const maxNumber = 45;
+// const numbersOfLotto = 6;
+// let inputMoney = 0;
+// const lottos = [];
+// const minNumber = 1;
+// const maxNumber = 45;
+
+const data = {
+  numbersOfLotto: 6,
+  minNumber: 1,
+  maxNumber: 45,
+};
 
 /**
  *  입력한 돈만큼 로또를 구입하는 함수 
@@ -19,7 +25,7 @@ const maxNumber = 45;
  */
 const buyLottos = (money) => {
   const lottoPrice = 1000;
-  inputMoney = money;
+  data.inputMoney = money;
   // 구매할 수 있는 로또 수 
   const countOfLottos = Math.floor(money / lottoPrice);
   console.log('countOfLottos:', countOfLottos);
@@ -31,10 +37,11 @@ const buyLottos = (money) => {
  *  @param {Number} count - 구매할 로또의 수 
  */
 const publishLotto = (count) => {
+  data.lottos = [];
   for(let i=0; i < count; i++) {
-    lottos.push(getRandomNumbers());
+    data.lottos.push(getRandomNumbers());
   };
-  console.log('발급된 로또:', lottos);
+  console.log('발급된 로또:', data.lottos);
   console.log('당첨 숫자를 입력해주세요. ex) setLuckyNumber([1, 2, 3, 4, 5, 6])');
 };
 
@@ -43,7 +50,7 @@ const publishLotto = (count) => {
  */
 const getRandomNumbers = () => {
   let lotto = [];
-  for(let i=0; i < numbersOfLotto; i++) {
+  for(let i=0; i < data.numbersOfLotto; i++) {
     let number = extractRandomNumber();
     // 중복된 숫자를 뽑은 경우 다시 추첨
     if (lotto.includes(number)) {
@@ -59,7 +66,7 @@ const getRandomNumbers = () => {
  *  랜덤으로 minNumber와 maxNumber 사이의 정수를 뽑는 함수 
  */
 const extractRandomNumber = () => {
-  return Math.floor(Math.random() * (maxNumber - minNumber + 1)) + minNumber;
+  return Math.floor(Math.random() * (data.maxNumber - data.minNumber + 1)) + data.minNumber;
 }
 
 /**
@@ -70,16 +77,16 @@ const setLuckyNumber = (numbers) => {
   if (Array.isArray(numbers)) {
     // 중복 숫자 제거, 입력된 숫자가 최소값(minNumber), 최대값(maxNumber)를 충족하는지 비교 
     const filteredNumbers = numbers.filter((number, idx, arr) => {
-      return arr.indexOf(number) === idx && number >= minNumber && number <= maxNumber
+      return arr.indexOf(number) === idx && number >= data.minNumber && number <= data.maxNumber
     });
-    if (filteredNumbers.length === numbersOfLotto) {
+    if (filteredNumbers.length === data.numbersOfLotto) {
       console.log('당첨 번호:', numbers);
       checkLottos(numbers);
     } else {
       console.log('1~45 사이의 중복되지 않은 숫자로 구성된 배열을 입력해주세요.');
     }
   } else {
-    console.log(`${numbersOfLotto}개의 숫자로 구성된 배열 형식으로 입력해주세요.`);
+    console.log(`${data.numbersOfLotto}개의 숫자로 구성된 배열 형식으로 입력해주세요.`);
   }
 };
 
@@ -88,7 +95,7 @@ const setLuckyNumber = (numbers) => {
  */
 const checkLottos = (luckyNumbers) => {
   const results = [];
-  lottos.forEach((lotto) => {
+  data.lottos.forEach((lotto) => {
     let result = lotto.filter(number => luckyNumbers.includes(number));
     results.push(result.length);
   })
@@ -120,7 +127,7 @@ const countWin = (array) => {
     total += statistics.count[key] * statistics.prize[key];
   }
   // 수익률 계산
-  statistics['rateOfReturn'] = ((total - inputMoney) / inputMoney) * 100;
+  statistics['rateOfReturn'] = ((total - data.inputMoney) / data.inputMoney) * 100;
   printResults(statistics);
 };
 
