@@ -7,31 +7,18 @@
  *  - 각 로또 번호는 6개다.
  */
 
-const lottoPrice = 1000;
-let inputMoney = 0;
 const numbersOfLotto = 6;
+let inputMoney = 0;
 const lottos = [];
-let luckyNumbers = [];
 const minNumber = 1;
 const maxNumber = 45;
-const results = [];
-const statistics = {
-  prize: {
-    0: 0,
-    1: 0,
-    2: 0,
-    3: 5000,
-    4: 50000,
-    5: 1500000,
-    6: 2000000000
-  }
-};
 
 /**
  *  입력한 돈만큼 로또를 구입하는 함수 
  *  @param {Number} money - 입력한 돈
  */
 const buyLottos = (money) => {
+  const lottoPrice = 1000;
   inputMoney = money;
   // 구매할 수 있는 로또 수 
   const countOfLottos = Math.floor(money / lottoPrice);
@@ -82,11 +69,12 @@ const extractRandomNumber = () => {
 const setLuckyNumber = (numbers) => {
   if (Array.isArray(numbers)) {
     // 중복 숫자 제거, 입력된 숫자가 최소값(minNumber), 최대값(maxNumber)를 충족하는지 비교 
-    const filteredNumbers = numbers.filter((number, idx, arr) => (arr.indexOf(number) === idx && number >= minNumber && number <= maxNumber));
+    const filteredNumbers = numbers.filter((number, idx, arr) => {
+      return arr.indexOf(number) === idx && number >= minNumber && number <= maxNumber
+    });
     if (filteredNumbers.length === numbersOfLotto) {
-      luckyNumbers = numbers;
-      console.log('당첨 번호:', luckyNumbers);
-      checkLottos();
+      console.log('당첨 번호:', numbers);
+      checkLottos(numbers);
     } else {
       console.log('1~45 사이의 중복되지 않은 숫자로 구성된 배열을 입력해주세요.');
     }
@@ -98,14 +86,14 @@ const setLuckyNumber = (numbers) => {
 /**
  *  당첨 여부를 확인하는 함수 
  */
-const checkLottos = () => {
+const checkLottos = (luckyNumbers) => {
+  const results = [];
   lottos.forEach((lotto) => {
     let result = lotto.filter(number => luckyNumbers.includes(number));
     results.push(result.length);
   })
   console.log('숫자 매칭 결과:', results);
   countWin(results);
-  printResults();
 };
 
 /**
@@ -113,21 +101,33 @@ const checkLottos = () => {
  *  @param {Array} array - 매칭 결과
  */
 const countWin = (array) => {
+  const statistics = {
+    prize: {
+      0: 0,
+      1: 0,
+      2: 0,
+      3: 5000,
+      4: 50000,
+      5: 1500000,
+      6: 2000000000
+    }
+  };
   // 숫자 몇 개를 맞췄는지 계산
   statistics['count'] = array.reduce((prev, curr) => (prev[curr] = ++prev[curr] || 1, prev), {});
   // 총 수익 계산
   let total = 0;
   for (key in statistics.count) {
-    total += statistics.count[key] * statistics.prize[key]
+    total += statistics.count[key] * statistics.prize[key];
   }
   // 수익률 계산
   statistics['rateOfReturn'] = ((total - inputMoney) / inputMoney) * 100;
+  printResults(statistics);
 };
 
 /**
  *  당첨 통계를 출력하는 함수 
  */
-const printResults = () => {
+const printResults = (statistics) => {
   console.log(`당첨 통계 
 3개 일치 (5000원) - ${statistics.count[3] || 0}개
 4개 일치 (50000원)- ${statistics.count[4] || 0}개
